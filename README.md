@@ -1,16 +1,15 @@
-### scrcpyGUI.hta.bat
-scrcpyGUI,windows only
-## scrcpy命令行 简单使用说明
+
+# scrcpy命令行 简单使用说明
 命令行工具仓库地址：https://github.com/Genymobile/scrcpy
-# 如何有线连接手机
+## 如何有线连接手机
  - 只有一个安卓手机连接PC的情况下
   `scrcpy -d`
  - 有多个设备连接的情况下
    从命令`adb devices`的第一列中选一个设备ID
    然后通过命令`scrcpy -s ID`连接设备
    
-# 如何无线连接手机
-# 1. 第一种情况：手头有USB线
+## 如何无线连接手机
+### 1. 第一种情况：手头有USB线
  - Android手机端设置：
   打开 开发者选项->USB调试
  - PC端设置：
@@ -19,7 +18,7 @@ scrcpyGUI,windows only
   会在命令行后台显示出IP地址和PORT端口号，记录下，下次连的时候用
   ## 然后下次就拔掉USB线通过IP连接了
   `scrcpy --tcpip=IP:PORT`
-# 2. 第二种情况：手头没有USB线，但手机安卓系统支持无线调试(好像是Android版本>=10的才支持)
+### 2. 第二种情况：手头没有USB线，但手机安卓系统支持无线调试(好像是Android版本>=10的才支持)
  - Android手机端设置：
   打开 开发者选项->无线调试（打开并记录下IP跟PORT_1）->使用配对码配对设备->记录下用来跟PC配对的IP&端口&配对码三样东西（IP,PORT_2,CODE)
  - PC端设置:
