@@ -8,7 +8,7 @@
         set "Option=%%b"
     )
  @echo on
-    %CMD% %Option%
+    %CMD% %Option% || PAUSE
 goto :EOF
 -->
 <html>
