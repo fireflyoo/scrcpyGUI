@@ -62,6 +62,12 @@
 			out.innerText=result.Out
 			err.innerText=result.Err
 		}
+		otg.onclick=function() {
+			var result=exec('scrcpy -s'+devices.value+' --otg')
+			refreshDevicesList()
+			out.innerText=result.Out
+			err.innerText=result.Err
+		}
 		launch.onclick=function() {
 			var result=exec('scrcpy -s '+devices.value+getOptions())
 			out.innerText=result.Out
@@ -91,7 +97,10 @@
     <button id="start">Start</button><button id="pair_start">Pair</button><br><br>
 	<h3>Connect from Device</h3>
 	<select id="devices" size=5 ><select><br>
-	<button id="launch">Launch</button><button id="refresh">Refresh</button><button id="del">Delete</button>
+	<button id="launch">Launch</button>
+	<button id="refresh">Refresh</button>
+	<button id="del">Delete</button>
+	<button id="otg" title="Only work with USB-Connected">OTG</button>
 	<fieldset>
     <legend>配置</legend>
     <input type="checkbox" name="options" value="--turn-screen-off" checked><lable>自动息屏</lable>
