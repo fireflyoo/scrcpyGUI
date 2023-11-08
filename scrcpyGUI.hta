@@ -15,6 +15,11 @@
 		         Err: exec.StdErr.ReadAll()
 				 }
     }
+	function run(command){
+        var shell = new ActiveXObject("WScript.Shell"),
+        exitCode = shell.Run("cmd /c "+command+" 2> err.log > out.log",0,false);
+        return exitCode
+    }
 	function getOptions() {
 		var result=[];
 		for(var i=0;i<options.length;i++){
@@ -24,9 +29,8 @@
 		return " "+result.join(" ")
 	}
 	function wireless() {
-		var result=exec('scrcpy --tcpip='+IP.value+getOptions())
-		out.innerText=result.Out
-		err.innerText=result.Err
+		var exitCode=run('scrcpy --tcpip='+IP.value+getOptions())
+		if(exitCode!=0)err.innerText="Fail"
 		}
 	function wifiPair() {
 		var result=exec('adb pair '+IP.value)
@@ -43,15 +47,19 @@
 		if(devices.options.length!=0)devices.options[0].selected = true
 	}
 	function fromUsbToWifi() {
-		var result=exec('scrcpy -d --tcpip'+getOptions())
-		out.innerText=result.Out
-		err.innerText=result.Err
+		var exitCode=run('scrcpy -d --tcpip'+getOptions())
+		if(exitCode!=0)err.innerText="Fail"
 	}
 
 	window.onload = function () {
 		refreshDevicesList();
 		refresh.onclick=refreshDevicesList
 	// /*Debug*/	out.innerText=ls_devices+ls_devices.length
+		open_err.onclick=function(){
+			var shell = new ActiveXObject("WScript.Shell"),
+			exitCode = shell.Run("notepad err.log",1,false);
+			return exitCode
+		}
 		close_window.onclick=function () {
 			window.close();
 		}
@@ -63,15 +71,12 @@
 			err.innerText=result.Err
 		}
 		otg.onclick=function() {
-			var result=exec('scrcpy -s'+devices.value+' --otg')
-			refreshDevicesList()
-			out.innerText=result.Out
-			err.innerText=result.Err
+			var exitCode=run('scrcpy -s'+devices.value+' --otg')
+			if(exitCode!=0)err.innerText="Fail"
 		}
 		launch.onclick=function() {
-			var result=exec('scrcpy -s '+devices.value+getOptions())
-			out.innerText=result.Out
-			err.innerText=result.Err
+			var exitCode=run('scrcpy -s '+devices.value+getOptions())
+			if(exitCode!=0)err.innerText="Fail"
 		}
 		pair_start.onclick=wifiPair
 		start.onclick=wireless;
@@ -80,15 +85,17 @@
     <style>
         *{color:gray}
 		#err{color:red}
+		body{background-color:black}
 		h2{font-size:20px}
 		select{width:250px}
         button{background-color:black; border-color:white}
     </style>
 </head>
-<body bgcolor="black">
+<body>
     <h2>Scrcpy</h2>   
     <hr>
     <button id="usb2wifi">一键无线</button>
+	<button id="open_err">错误日志</button>
     <button id="close_window">close</button>
     <hr>
 	<br>
@@ -108,6 +115,7 @@
 	<input type="checkbox" name="options" value="--power-off-on-close" checked><lable title="">关后息屏</lable>
     <input type="checkbox" name="options" value="--always-on-top" checked><lable title="--always-on-top">窗口置顶</lable>
 	<br>
+	<input type="checkbox" name="options" value="--window-borderless"><lable title="--window-borderless">无边框窗</lable>
 	<input type="checkbox" name="options" value="--disable-screensaver" checked><lable title="--disable-screensaver">禁止屏保</lable>
 	<input type="checkbox" name="options" value="--no-audio"><lable title="--no-audio">禁投音频</lable>
     <input type="checkbox" name="options" value="--no-control"><lable title="--no-control">禁止操控</lable>
