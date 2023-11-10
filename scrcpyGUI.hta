@@ -6,11 +6,14 @@
     <meta http-equiv=msthemecompatible content=yes />
     <title>HTA Buttons</title>
     <script language="JScript">
-    window.resizeTo(450,620);
+    window.resizeTo(500,750);
 
     function exec(command){
         var shell = new ActiveXObject("WScript.Shell"),
         exec = shell.Exec(command);
+		while (exec.Status == 0){
+			out.innerText="Processing..."
+		}
         return { Out: exec.StdOut.ReadAll(),
 		         Err: exec.StdErr.ReadAll(),
 				 ExitCode: exec.ExitCode
@@ -97,6 +100,15 @@
 			out.innerText=result.Out
 			err.innerText=result.Err
 		}
+		tcpip5555.onclick=function() {
+			var result1=exec('adb -s '+devices.value+' shell ip route')
+			var ip=result1.Out.split(/\s+/)[8]
+			var result2=exec('adb -s '+devices.value+' tcpip 5555')
+			var result3=exec('adb connect '+ip)
+			refreshDevicesList()
+			out.innerText=[result1.Out,result2.Out,result3.Out].join("\n")
+			err.innerText=[result1.Err,result2.Err,result3.Err].join("\n")
+		}
 		otg.onclick=function() {
 			var exitCode=run('scrcpy -s'+devices.value+' --otg')
 			if(exitCode!=0)err.innerText="Fail"
@@ -131,6 +143,7 @@
     <button id="start">Start</button>
 	<button id="pair_start">Pair</button><lable id="_exitCode"></lable><br>
 	<h3>Connect from Device</h3>
+	<button id="tcpip5555">switch to default port-5555</button><br>
 	<select id="devices" size=5 ><select><br>
 	<button id="launch">Launch</button>
 	<button id="refresh">Refresh</button>
