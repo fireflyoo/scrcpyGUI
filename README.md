@@ -25,10 +25,11 @@
  - Android手机端设置：
    打开 开发者选项->无线调试（打开并记录下IP跟PORT_1）->使用配对码配对设备->记录下用来跟PC配对的IP&端口&配对码三样东西（IP,PORT_2,CODE)
  - PC端设置:
-   执行这个命令后`adb pair IP:PORT_2`，按提示输入配对码CODE
-   然后就可以通过`scrcpy --tcpip=IP:PORT_1`连接了,还没完
+   执行这个命令后`adb pair IP:PORT_2 PAIRCODE`，按提示输入配对码CODE
+   然后就可以通过`scrcpy --tcpip=IP:PORT_1`连接了
 
-   最好再重新执行下`scrcpy --tcpip -s ID`
+   最好再重新执行下`adb -s IP:PORT_1 tcpip 5555`
+   这样下次直接用`scrcpy --tcpip=IP`就可以连接了，无线调试关了也能用
 ## 尾注   
 - 注1：上面命令行里大写的变量需要替换成你记录的数字串。
 - 注2：遇到奇怪的问题无法连接直接`adb kill-server`，再重试就好了..
