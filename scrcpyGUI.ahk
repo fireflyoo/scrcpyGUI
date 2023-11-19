@@ -1,5 +1,6 @@
 #Requires Autohotkey v2
 #Include <ReadRun>
+#SingleInstance
 #Warn
 ;AutoGUI 2.5.8 creator: Alguimist autohotkey.com/boards/viewtopic.php?f=64&t=89901
 ;AHKv2converter creator: github.com/mmikeww/AHK-v2-script-converter
@@ -40,12 +41,13 @@ xs+10 ys+10 左上相对位置
 */
 myGui.AddGroupBox("xm+10 ym+25 w500 h80", "无线连接")
 t1IP := myGui.AddEdit("xp+5 yp+20 w200 r1")
-t1Start := myGui.AddButton("xp y+5 Default","连接")
+t1Start := myGui.AddButton("xp y+5 +Default","连接")
 t1Pair := myGui.AddButton("x+5 yp","配对")
 myGui.AddGroupBox( "xm+10 y+20 w500 h185 Section", "设备清单")
 LV := myGui.AddListView( "xp+5 yp+20 w485 r5",["SN","online","product","model","device","id"])
 t1LaunchBTN := myGui.AddButton( "xp y+5 w80 h23", "投屏")
 t1RefreshBTN := myGui.AddButton( "x+5 yp w80 h23", "刷新")
+t1SwitchWifi := myGui.AddButton("x+5 yp w80 h23", "一键无线")
 t1DeleteBTN := myGui.AddButton( "x+5 yp w80 h23", "删除")
 CheckBox := []
 CheckBox.push myGui.Add("CheckBox", "xs+5 y+5 h20 valways-on-top", "窗口置顶")
@@ -64,17 +66,22 @@ Tab.UseTab(3)
 myGui.AddGroupBox("x30 y30 w500 h100", "运行测试")
 SB.SetParts(165,165), SB.SetText("`t<Esc> Cancel/Clear", 1),  SB.SetText("`t<Enter> ReadRun", 2)
 t3Input := myGui.AddEdit("x60 y60 w300")
-t3Button := myGui.AddButton("Default","  运行  ")
+;t3Button := myGui.AddButton("Default","  运行  ")
+t3Button := myGui.AddButton("","  运行  ")
 t3Button2 := myGui.Addbutton("x+5 yp","终止/清空")
 t3Output := myGui.AddEdit("x30 y160 w500 -Wrap +HScroll R20 ReadOnly")
 t1RefreshBTN.OnEvent("Click",refreshDevices)
 t3Button2.OnEvent("Click",myGui_StopOrClear)
-
+t3Input.OnEvent("Focus",(*)=>t3Button.Opt("+Default"))
+t3Input.OnEvent("LoseFocus",(*)=>t3Button.Opt("-Default"))
 ; myGui.AddGroupBox( "x30 y160 w500 h240", "运行输出")
-
+t1IP.OnEvent("Focus",(*)=>t1Start.Opt("+Default"))
+t1IP.OnEvent("LoseFocus",(*)=>t1Start.Opt("-Default"))
 t1Start.OnEvent("Click",(*)=>RunCMDGUI("scrcpy --tcpip=" . t1IP.Text . Options(),t1Output))
 t1Pair.OnEvent("Click",(*)=>RunCMDGUI("adb pair " . t1IP.Text,t1Output))
 t1LaunchBTN.OnEvent("Click", LV_Launch02)
+t1SwitchWifi.OnEvent("Click",LV_SwitchWifi)
+t1DeleteBTN.OnEvent("Click",LV_Delete)
 LV.OnEvent("DoubleClick",LV_Launch)
 t3Button.OnEvent("Click",(*) => RunCMDGUI(t3Input.Text,t3Output))
 myGui.OnEvent('Close', (*) => ExitApp())
@@ -96,6 +103,14 @@ init(){
   RunCMDGUI("adb start-server",t1Output)
   refreshDevices()
 }
+LV_Delete(*){
+  text:=ListViewGetContent("Selected Col1",LV)
+
+  RunCmdGUI("adb disconnect " . text,t1Output)
+  rowNum:=LV.GetNext(0,"Focused")
+  LV.Delete(rowNum)
+;  LV.Delete
+}
 LV_Launch(myGUI,rowNum){
 ;  MsgBox LV.GetText(rowNum)
   text:=LV.GetText(rowNum)
@@ -106,6 +121,17 @@ LV_Launch02(*){
   text:=ListViewGetContent("Selected Col1",LV)
 
   RunCmdGUI("scrcpy -s " . text . Options(),t1Output)
+}
+
+LV_SwitchWifi(*){
+  text:=ListViewGetContent("Selected Col1",LV)
+
+  out:=RunCMD("adb -s " . text . " shell ip route")
+  RunCMDGUI("adb -s " . text . " tcpip 5555",t1Output)
+  pos:=InStr(out,A_Space,1,,-2)
+  ip:=SubStr(out,pos+1)
+ RunCmdGUI("scrcpy" . Options() . " --tcpip=" . ip,t1Output)
+;  RunCmdGUI("scrcpy -s " . text . " --tcpip" . Options(),t1Output)
 }
 refreshDevices(*){
   LV.Delete()
