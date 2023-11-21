@@ -49,17 +49,20 @@ t1LaunchBTN := myGui.AddButton( "xp y+5 w80 h23", "投屏")
 t1RefreshBTN := myGui.AddButton( "x+5 yp w80 h23", "刷新")
 t1SwitchWifi := myGui.AddButton("x+5 yp w80 h23", "一键无线")
 t1DeleteBTN := myGui.AddButton( "x+5 yp w80 h23", "删除")
+t1OtgBTN := myGui.AddButton( "x+5 yp w80 h23", "OTG")
 CheckBox := []
-CheckBox.push myGui.Add("CheckBox", "xs+5 y+5 h20 valways-on-top", "窗口置顶")
-CheckBox.push myGui.Add("CheckBox", "x+5 yp h20 vno-control","禁止操控")
-CheckBox.push myGui.Add("CheckBox", "x+5 yp h20 vno-audio", "禁投音频")
-CheckBox.push myGui.Add("CheckBox", "x+5 yp h20 vturn-screen-off checked", "自动息屏")
-CheckBox.push myGui.Add("CheckBox", "x+5 yp h20 vpower-off-on-close", "关后息屏")
-CheckBox.push myGui.Add("CheckBox", "x+5 yp h20 vstay-awake", "保持唤醒")
+CheckBox.push myGui.AddCheckBox( "xs+5 y+5 h20 valways-on-top", "窗口置顶")
+CheckBox.push myGui.AddCheckBox( "x+5 yp h20 vno-control","禁止操控")
+CheckBox.push myGui.AddCheckBox( "x+5 yp h20 vno-audio", "禁投音频")
+CheckBox.push myGui.AddCheckBox( "x+5 yp h20 vturn-screen-off checked", "自动息屏")
+CheckBox.push myGui.AddCheckBox( "x+5 yp h20 vpower-off-on-close", "关后息屏")
+CheckBox.push myGui.AddCheckBox( "x+5 yp h20 vstay-awake", "保持唤醒")
 t1Output := myGui.AddEdit("xm+10 y+15 w500 r10 ReadOnly")
 Tab.UseTab(2)
 myGui.AddGroupBox( "x30 ym+25 w500 h400 Section", "连接配置")
-
+MyGui.AddText("xs+10 ys+20", "旋转角度:")
+DropList := []
+DropList.push MyGui.AddDropDownList("x+5 yp vrotation", ["0度","90度","180度","270度"])
 
 t2Options := myGui.Add("Edit", "x40 y440 w400", "")
 Tab.UseTab(3)
@@ -70,6 +73,7 @@ t3Input := myGui.AddEdit("x60 y60 w300")
 t3Button := myGui.AddButton("","  运行  ")
 t3Button2 := myGui.Addbutton("x+5 yp","终止/清空")
 t3Output := myGui.AddEdit("x30 y160 w500 -Wrap +HScroll R20 ReadOnly")
+t1OtgBTN.OnEvent("Click",(*)=>RunCMDGUI("scrcpy -s " . ListViewGetContent("Selected Col1",LV) . " --otg",t1Output))
 t1RefreshBTN.OnEvent("Click",refreshDevices)
 t3Button2.OnEvent("Click",myGui_StopOrClear)
 t3Input.OnEvent("Focus",(*)=>t3Button.Opt("+Default"))
@@ -95,6 +99,10 @@ Options() {
     if option.value {
       result .= A_Space . "--" . option.Name
     }
+  }
+  value := MyGUI["rotation"].value
+  if ( value != 0){
+    result .= " --rotation=" . value-1
   }
   return result
 }
