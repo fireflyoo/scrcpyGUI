@@ -108,7 +108,9 @@ LV_Delete(*){
 
   RunCmdGUI("adb disconnect " . text,t1Output)
   rowNum:=LV.GetNext(0,"Focused")
-  LV.Delete(rowNum)
+  if(rowNum!=0) {
+    LV.Delete(rowNum)
+ }
 ;  LV.Delete
 }
 LV_Launch(myGUI,rowNum){
