@@ -1,3 +1,6 @@
+|测试|随意|
+|----|----|
+|- [ ]|- [x]|
 
 # scrcpy命令行 简单使用说明
 命令行工具仓库地址：https://github.com/Genymobile/scrcpy
